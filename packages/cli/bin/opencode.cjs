@@ -8,8 +8,8 @@ const os = require("os")
 const forwardedSignals =
   process.platform === "win32" ? ["SIGINT", "SIGTERM", "SIGHUP"] : ["SIGINT", "SIGTERM", "SIGHUP", "SIGUSR1"]
 
-function run(target) {
-  const child = childProcess.spawn(target, process.argv.slice(2), { stdio: "inherit" })
+function run(target, args = process.argv.slice(2), cwd) {
+  const child = childProcess.spawn(target, args, { stdio: "inherit", ...(cwd ? { cwd } : {}) })
   child.on("error", (error) => {
     console.error(error.message)
     process.exit(1)
@@ -33,6 +33,19 @@ function run(target) {
 const envPath = process.env.OPENCODE_BIN_PATH
 const scriptDir = path.dirname(fs.realpathSync(__filename))
 const command = path.basename(__filename).replace(/\.cjs$/, "")
+const source = path.resolve(scriptDir, "..", "src", "index.ts")
+if (fs.existsSync(source)) {
+  const child = childProcess.spawnSync(process.env.BUN_EXE || "bun", [source, ...process.argv.slice(2)], {
+    stdio: "inherit",
+    cwd: path.dirname(path.dirname(source)),
+  })
+  if (child.error) {
+    console.error(child.error.message)
+    process.exit(1)
+  }
+  process.exit(typeof child.status === "number" ? child.status : 0)
+}
+
 const nodeBuild = command === "opencode-node"
 const sourceCommand = nodeBuild ? "opencode2-node" : "opencode"
 const cached = path.join(scriptDir, `.${command}`)
@@ -52,7 +65,10 @@ function supportsAvx2() {
   }
   if (platform === "darwin") {
     try {
-      const result = childProcess.spawnSync("sysctl", ["-n", "hw.optional.avx2_0"], { encoding: "utf8", timeout: 1500 })
+      const result = childProcess.spawnSync("sysctl", ["-n", "hw.optional.avx2_0"], {
+        encoding: "utf8",
+        timeout: 1500,
+      })
       return result.status === 0 && (result.stdout || "").trim() === "1"
     } catch {
       return false

@@ -17,8 +17,8 @@ test("rejects unrecognized theme structures", () => {
   expect(() => parseTheme({ version: 3 })).toThrow("Invalid theme")
 })
 
-test("registers opencode as a native V2 theme", () => {
-  expect(allThemes().opencode).toBe(getOpenCodeTheme())
+test("registers TALOS as a native V2 theme", () => {
+  expect(allThemes().talos).toBe(getOpenCodeTheme())
   expect(parseTheme(getOpenCodeTheme()).base).toBeDefined()
 })
 
@@ -72,7 +72,7 @@ test("replacement sources receive independent parse caches", () => {
 
 test("hasTheme checks theme presence", () => {
   expect(hasTheme("missing-theme")).toBe(false)
-  expect(hasTheme("opencode")).toBe(true)
+  expect(hasTheme("talos")).toBe(true)
 })
 
 test("resolveTheme rejects circular color refs", () => {

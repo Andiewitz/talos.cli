@@ -236,8 +236,8 @@
         "800": "#e4dbfd",
         "900": "#f6f3ff"
       },
-      "accent": "$hue.orange",
-      "interactive": "$hue.blue",
+      "accent": "$hue.purple",
+      "interactive": "$hue.purple",
       "neutral": "$hue.gray"
     },
     "categorical": [
@@ -380,7 +380,7 @@
         "900": "#17072b"
       },
       "accent": "$hue.purple",
-      "interactive": "$hue.orange",
+      "interactive": "$hue.purple",
       "neutral": "$hue.gray"
     }
   }
